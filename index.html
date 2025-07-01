@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>This or That - Survival</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    .option { display: inline-block; margin: 20px; padding: 20px; border: 2px solid black; cursor: pointer; font-size: 24px; }
+    .option:hover { background-color: #f0f0f0; }
+  </style>
+</head>
+<body>
+
+  <h1>This or That</h1>
+  <div id="options">
+    <div class="option" id="left"></div>
+    <div class="option" id="right"></div>
+  </div>
+  <p id="status"></p>
+
+  <script>
+    const allOptions = ["Pizza", "Burger", "Taco", "Sushi", "Pasta", "Steak", "Ice Cream", "Salad", "Donut", "Fries"];
+    let usedOptions = [];
+    let currentOption = null;
+    let challengerOption = null;
+    let results = [];
+
+    function getNextOption(exclude = []) {
+      const remaining = allOptions.filter(opt => !exclude.includes(opt));
+      return remaining.length ? remaining[Math.floor(Math.random() * remaining.length)] : null;
+    }
+
+    function showOptions() {
+      document.getElementById("left").textContent = currentOption;
+      document.getElementById("right").textContent = challengerOption;
+    }
+
+    function handleChoice(winner) {
+      const loser = winner === currentOption ? challengerOption : currentOption;
+      results.push({ winner, loser });
+
+      // Update currentOption
+      currentOption = winner;
+      usedOptions.push(loser);
+
+      // Get new challenger
+      challengerOption = getNextOption([...usedOptions, currentOption]);
+
+      if (!challengerOption) {
+        document.getElementById("options").innerHTML = `<h2>Final Winner: ${currentOption} 🎉</h2>`;
+        console.log("Game results:", results);
+        return;
+      }
+
+      showOptions();
+    }
+
+    document.getElementById("left").onclick = () => handleChoice(currentOption);
+    document.getElementById("right").onclick = () => handleChoice(challengerOption);
+
+    // Start the game
+    function startGame() {
+      currentOption = getNextOption();
+      usedOptions.push(currentOption);
+      challengerOption = getNextOption([currentOption]);
+      showOptions();
+    }
+
+    startGame();
+  </script>
+
+</body>
+</html>
